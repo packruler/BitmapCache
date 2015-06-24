@@ -23,7 +23,8 @@ public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
 
 
     /**
-     * Store Bitmaps in a cache with max size
+     * Store Bitmaps in a cache with max size with automatic removal based on last access order
+     *
      * @param maxSize
      *         Maximum size in kB
      */
@@ -31,11 +32,26 @@ public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
         max = maxSize;
     }
 
+    /**
+     * Remove all Bitmaps from cache map but does not recycle
+     */
     @Override
     public void clear() {
         map.clear();
         queueForRemoval.clear();
         size = 0;
+    }
+
+    /**
+     * Option to clear cache map and recycle contained values
+     * @param recycle recycle contained values if true
+     */
+    public void clear(boolean recycle) {
+        if (recycle)
+            for (V val : values()) {
+                val.recycle();
+            }
+        clear();
     }
 
     @Override
