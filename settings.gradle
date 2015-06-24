@@ -1,0 +1,2 @@
+include ':BitmapCache'
+//project(':bitmapcache').projectDir=new File('/home/packruler/Android/StudioProjects/BitmapCache/BitmapCache')
