@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/home/packruler/ZFS_Storage/Android/StudioProjects/BitmapCache/BitmapCache/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values/values.xml -->
+    <!-- From: file:/home/packruler/Android/StudioProjects/BitmapCache/BitmapCache/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values/values.xml -->
     <eat-comment/>
     <attr format="reference" name="drawerArrowStyle"/>
     <attr format="dimension" name="height"/>
@@ -190,22 +190,22 @@
     <string name="abc_shareactionprovider_share_with">Share with</string>
     <string name="abc_shareactionprovider_share_with_application">Share with %s</string>
     <string name="abc_toolbar_collapse_description">Collapse</string>
-    <!-- From: file:/home/packruler/ZFS_Storage/Android/StudioProjects/BitmapCache/BitmapCache/src/main/res/values/strings.xml -->
+    <!-- From: file:/home/packruler/Android/StudioProjects/BitmapCache/BitmapCache/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="app_name">Bitmap Cache</string>
-    <!-- From: file:/home/packruler/ZFS_Storage/Android/StudioProjects/BitmapCache/BitmapCache/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values/values.xml -->
+    <!-- From: file:/home/packruler/Android/StudioProjects/BitmapCache/BitmapCache/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values/values.xml -->
     <eat-comment/>
     <string name="status_bar_notification_info_overflow">999+</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
     <style name="AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat.Light"/>
     <style name="Animation.AppCompat.Dialog" parent="Base.Animation.AppCompat.Dialog"/>
     <style name="Animation.AppCompat.DropDownUp" parent="Base.Animation.AppCompat.DropDownUp"/>
-    <!-- From: file:/home/packruler/ZFS_Storage/Android/StudioProjects/BitmapCache/BitmapCache/src/main/res/values/styles.xml -->
+    <!-- From: file:/home/packruler/Android/StudioProjects/BitmapCache/BitmapCache/src/main/res/values/styles.xml -->
     <eat-comment/>
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
     </style>
-    <!-- From: file:/home/packruler/ZFS_Storage/Android/StudioProjects/BitmapCache/BitmapCache/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values/values.xml -->
+    <!-- From: file:/home/packruler/Android/StudioProjects/BitmapCache/BitmapCache/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values/values.xml -->
     <eat-comment/>
     <style name="Base.AlertDialog.AppCompat" parent="android:Widget">
         <item name="android:layout">@layout/abc_alert_dialog_material</item>

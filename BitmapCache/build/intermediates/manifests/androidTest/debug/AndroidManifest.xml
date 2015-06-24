@@ -13,11 +13,7 @@
         android:label="Tests for com.packruler.bitmapcache.test"
         android:targetPackage="com.packruler.bitmapcache.test" />
 
-    <application
-        android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+    <application>
         <uses-library android:name="android.test.runner" />
     </application>
 
