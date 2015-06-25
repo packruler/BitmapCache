@@ -7,7 +7,9 @@ If a new Bitmap is added to cache that would make the cache size larger than set
 To retrieve in gradle:
 `compile 'com.packruler:BitmapCache:1.0'`
 
-`new BitmapCache(int maxSize)` maxSize is the number of kilobytes of memory to limit the cache to using.
+To instanciate call `new BitmapCache(int maxSize)` 
+`maxSize` is the number of kilobytes of memory to limit the cache to using.
+
 If a new Bitmap is added to cache that would make the cache size larger than set max the cache removes Bitmaps in order of oldest last use
 
 The usage is based off a Map for example:
