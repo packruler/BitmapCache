@@ -10,9 +10,10 @@ To retrieve in gradle:
 To instanciate call `new BitmapCache(int maxSize)` 
 `maxSize` is the number of kilobytes of memory to limit the cache to using.
 
-If a new Bitmap is added to cache that would make the cache size larger than set max the cache removes Bitmaps in order of oldest last use
+If a new Bitmap is added to cache that would make the cache size larger than set max the cache removes Bitmaps in order of oldest last use.
 
-The usage is based off a Map for example:
-`get(K key)` returns the value at that key location if it is in the map
+Though not a subclass of Map most of the methods available in Map are available and are called accordingly on map containing values.
 
 Calling `get(K key)` updates the placement of `key` in the queue to for removal as cache reaches size limit
+
+If contained map should ever be needed for reference call `snapshot()`
