@@ -8,18 +8,18 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by Packruler on 6/23/15.
  */
-public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
+public class BitmapCache<K extends Comparable, V extends Bitmap> {
     private final String TAG = getClass().getSimpleName();
 
     private int max;
     private HashMap<K, V> map = new HashMap<>();
     private int size;
-    private ArrayBlockingQueue<K> queueForRemoval = new ArrayBlockingQueue<K>(10, true);
+    //    private ArrayBlockingQueue<K> queueForRemoval = new ArrayBlockingQueue<K>(1);
+    private UsageQueue<K> queueForRemoval = new UsageQueue<>();
 
 
     /**
@@ -33,69 +33,100 @@ public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
     }
 
     /**
-     * Remove all Bitmaps from cache map but does not recycle
+     * Remove all Bitmaps from cache map and recycles all of them
      */
-    @Override
     public void clear() {
-        map.clear();
-        queueForRemoval.clear();
-        size = 0;
+        clear(true);
     }
 
     /**
-     * Option to clear cache map and recycle contained values
-     * @param recycle recycle contained values if true
+     * Option to clear cache map and not recycle contained values
+     *
+     * @param recycle
+     *         recycle contained values if true
      */
     public void clear(boolean recycle) {
         if (recycle)
             for (V val : values()) {
                 val.recycle();
             }
-        clear();
+        map.clear();
+        queueForRemoval.clear();
+        size = 0;
     }
 
-    @Override
+    /**
+     * Similar to  {@link Map#containsKey(Object)}
+     */
     public boolean containsKey(Object key) {
         return map.containsValue(key);
     }
 
-    @Override
+    /**
+     * Similar to  {@link Map#containsValue(Object)}
+     */
     public boolean containsValue(Object value) {
         return map.containsValue(value);
     }
 
-    @Override
-    public Set<Entry<K, V>> entrySet() {
+    /**
+     * Similar to  {@link Map#entrySet()}
+     */
+    public Set<Map.Entry<K, V>> entrySet() {
         return map.entrySet();
     }
 
-    @Override
-    public V get(Object key) {
-        queueForRemoval.remove(key);
+    /**
+     * Retrieves value at key and updates usage tracking.
+     *
+     * @param key
+     *         the key
+     *
+     * @return the value of the mapping with the specified key, or {@code null} if no mapping for
+     * the specified key is found.
+     */
+    public V get(K key) {
+        queueForRemoval.use(key);
 
-        queueForRemoval.add((K) key);
         return map.get(key);
     }
 
-    @Override
+    /**
+     * Similar to  {@link Map#isEmpty()}
+     */
     public boolean isEmpty() {
         return map.isEmpty();
     }
 
-    @Override
+    /**
+     * Similar to  {@link Map#keySet()}
+     */
     public Set<K> keySet() {
         return map.keySet();
     }
 
-    @Override
+    /**
+     * Maps the specified key to the specified value.
+     * If the specified key is already occupied that old value is recycled.
+     *
+     * @param key
+     *         the key
+     * @param value
+     *         the value
+     *
+     * @return value
+     *
+     * @throws IllegalArgumentException
+     *         if value is too larger than cache size
+     */
     public V put(K key, V value) {
-        for (Entry<K, V> entry : map.entrySet()) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
             Log.v(TAG, entry.getKey().toString() + "| Size: " + (entry.getValue().getByteCount() / 1024));
         }
 
         int inSize = sizeOf(value);
         if (inSize > maxSize())
-            return null;
+            throw new IllegalArgumentException("Size too large for cache");
 
         V current = map.remove(key);
         if (current != null) {
@@ -103,27 +134,22 @@ public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
             current.recycle();
             System.gc();
         }
-        Log.v(TAG, "Current size: " + size + "| inSize: " + inSize + "| max: " + max + "| Trim required: " + ((size + inSize) < max));
-        if ((size + inSize) > max)
-            while ((size + inSize) > max)
-                trim();
+        size += inSize;
+        trimToMax();
 
         queueForRemoval.remove(key);
         queueForRemoval.add(key);
 
-        size += inSize;
         return map.put(key, value);
     }
 
-    @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-        for (Entry<? extends K, ? extends V> entry : map.entrySet()) {
+        for (Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
             put(entry.getKey(), entry.getValue());
         }
     }
 
-    @Override
-    public V remove(Object key) {
+    public V remove(K key) {
         V value = map.remove(key);
         if (value != null) {
             size -= sizeOf(value);
@@ -135,12 +161,10 @@ public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
         return value;
     }
 
-    @Override
     public int size() {
         return size;
     }
 
-    @Override
     public Collection<V> values() {
         return map.values();
     }
@@ -153,11 +177,19 @@ public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
         return max;
     }
 
+    /**
+     * Change max size of cache
+     */
+    public void setMaxSize(int newMax) {
+        max = newMax;
+        trimToMax();
+    }
+
     private boolean canAdd(V value) {
         return (size + sizeOf(value)) < maxSize();
     }
 
-    public void trim() {
+    private void trim() {
         Log.v(TAG + ".TRIM", "Current size: " +
                 NumberFormat.getInstance().format(size) + "/" +
                 NumberFormat.getInstance().format(max) + "KB");
@@ -170,4 +202,63 @@ public class BitmapCache<K, V extends Bitmap> implements Map<K, V> {
                 trim();
         }
     }
+
+    private void trimToMax() {
+        Log.v(TAG, "Current size: " + size + "| max: " + max + "| Trim required: " + (size < max));
+        if (size > max)
+            while (size > max)
+                trim();
+    }
+
+    /**
+     * Retrieve current underlying map of cached items
+     *
+     * @return map of cached {@linkplain V}
+     */
+    public Map<K, V> snapshot() {
+        return map;
+    }
+
+//    public class Key implements Comparable<Key> {
+//        final K key;
+//        long lastUsed;
+//        Key previous;
+//        Key next;
+//
+//        public Key(K key) {
+//            this.key = key;
+//            lastUsed = Calendar.getInstance().getTimeInMillis();
+//        }
+//
+//        public K peek() {
+//            return key;
+//        }
+//
+//        public K poll() {
+//            lastUsed = Calendar.getInstance().getTimeInMillis();
+//            moveDown();
+//            return key;
+//        }
+//
+//        private void moveDown() {
+//            while (next != null && next.lastUsed > lastUsed) {
+//                if (previous != null) {
+//                    next.previous = previous;
+//                    previous.next = next;
+//                }
+//                previous = next;
+//                next = next.next;
+//            }
+//        }
+//
+//        @Override
+//        public boolean equals(Object o) {
+//            return key.equals(((Key) o).key);
+//        }
+//
+//        @Override
+//        public int compareTo(Key another) {
+//            return (int) (lastUsed - another.lastUsed);
+//        }
+//    }
 }
