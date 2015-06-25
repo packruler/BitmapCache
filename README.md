@@ -5,7 +5,7 @@ If a new Bitmap is added to cache that would make the cache size larger than set
 
 ## How to use:
 To retrieve in gradle:
-`compile 'com.packruler:BitmapCache:1.0.0'`
+`compile 'com.packruler:BitmapCache:1.0'`
 
 The usage is based off a Map for example:
 `get(K key)` returns the value at that key location if it is in the map
